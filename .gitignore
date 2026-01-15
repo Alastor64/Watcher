@@ -4,7 +4,6 @@
 .vscode/
 bin/
 build/
-doc/
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
