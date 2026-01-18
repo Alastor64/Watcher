@@ -3,22 +3,22 @@
 class Inspirer
 {
 public:
-    virtual DT f(const DT &) = 0;
-    virtual DT df(const DT &) = 0;
+    virtual DataType f(const DataType &) const = 0;
+    virtual DataType df(const DataType &) const = 0;
 };
 class ReLu : public Inspirer
 {
 public:
-    DT f(const DT &) override;
-    DT df(const DT &) override;
+    DataType f(const DataType &) const override;
+    DataType df(const DataType &) const override;
 };
 class Leaky_ReLu : public ReLu
 {
 protected:
-    const DT k;
+    const DataType k;
 
 public:
-    Leaky_ReLu(const DT &);
-    DT f(const DT &) override;
-    DT df(const DT &) override;
+    Leaky_ReLu(const DataType &);
+    DataType f(const DataType &) const override;
+    DataType df(const DataType &) const override;
 };

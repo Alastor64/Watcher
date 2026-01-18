@@ -1,0 +1,204 @@
+#include "Matrix.hpp"
+// protected
+// public:
+Matrix::Matrix(const Matrix &x)
+{
+    cout << "execute copy construct\n"; // #
+    n = x.n;
+    m = x.m;
+    data = new DataType[n * m];
+    for (int i = 0; i < n * m; i++)
+        data[i] = x.data[i];
+}
+Matrix::Matrix(Matrix &&x)
+{
+    cout << "execute move construct\n"; // #
+    n = x.n;
+    m = x.m;
+    data = x.data;
+    x.data = nullptr;
+}
+Matrix::Matrix(int _n, int _m) : n(_n), m(_m)
+{
+    cout << "execute construct\n"; // #
+    data = new DataType[n * m];
+    for (int i = 0; i < n * m; i++)
+        data[i] = 0;
+}
+Matrix::~Matrix()
+{
+    if (data)
+        delete[] data;
+}
+const int Matrix::width() const
+{
+    return m;
+}
+const int Matrix::height() const
+{
+    return n;
+}
+DataType *Matrix::operator[](int index) const
+{
+    return data + index * m;
+}
+DataType &Matrix::operator()(int index) const
+{
+    if (n != 1 && m != 1)
+        throw "invalid index for non-vector matrix";
+    return data[index];
+}
+DataType &Matrix::operator()(int index1, int index2) const
+{
+    return data[index1 * m + index2];
+}
+Matrix &Matrix::operator=(const Matrix &x) &
+{
+    cout << "excute =\n"; // #
+    if (data != x.data)
+    {
+        n = x.n;
+        m = x.m;
+        if (data)
+            delete[] data;
+        data = new DataType[n * m];
+        for (int i = 0; i < n * m; i++)
+            data[i] = x.data[i];
+    }
+    return *this;
+}
+Matrix &Matrix::operator=(Matrix &&x) &
+{
+    cout << "excute move=\n"; // #
+    if (data != x.data)
+    {
+        n = x.n;
+        m = x.m;
+        if (data)
+            delete[] data;
+        data = x.data;
+        x.data = nullptr;
+    }
+    return *this;
+}
+Matrix operator+(const Matrix &a, const Matrix &b)
+{
+    cout << "l l \n"; // #
+    return move(Matrix(a) + b);
+}
+Matrix operator+(Matrix &&a, const Matrix &b)
+{
+    cout << "r l \n"; // #
+    if (a.n != b.n || a.m != b.m)
+        throw "invailed matrix addition for unequal size";
+    for (int i = 0; i < a.n * a.m; i++)
+    {
+        a.data[i] += b.data[i];
+    }
+    return move(a);
+}
+Matrix operator+(const Matrix &a, Matrix &&b)
+{
+    return move(b + a);
+}
+Matrix operator+(Matrix &&a, Matrix &&b)
+{
+    return move(b + a);
+}
+Matrix Matrix::operator+() const
+{
+    cout << "l r \n"; // #
+    return move(Matrix(*this));
+}
+Matrix &Matrix::operator+=(const Matrix &x) &
+{
+    return *this = *this + x;
+}
+Matrix operator-(const Matrix &a, const Matrix &b)
+{
+    return move(Matrix(a) + -b);
+}
+Matrix Matrix::operator-() const
+{
+    Matrix tmp(*this);
+    for (int i = 0; i < n * m; i++)
+        tmp.data[i] = -tmp.data[i];
+    return move(tmp);
+}
+Matrix &Matrix::operator-=(const Matrix &x) &
+{
+    // if (n != x.n || m != x.m)
+    //     throw "invailed matrix minus for unequal size";
+    // for (int i = 0; i < n * m; i++)
+    // {
+    //     data[i] -= x.data[i];
+    // }
+    return (*this = *this - x);
+}
+Matrix Matrix::operator*(const Matrix &x) const
+{
+    if (m != x.n)
+        throw "invalid matrix multiply for unequal width and height";
+    Matrix tmp(n, x.m);
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < x.m; j++)
+        {
+            for (int k = 0; k < m; k++)
+            {
+                tmp(i, j) += this->operator()(i, k) * x[k][j];
+            }
+        }
+    }
+    return move(tmp);
+}
+Matrix &Matrix::operator*=(const Matrix &x) &
+{
+    return *this = *this * x;
+}
+std::istream &operator>>(std::istream &input, Matrix &x)
+{
+    for (int i = 0; i < x.n * x.m; i++)
+        input >> x.data[i];
+    return input;
+}
+std::ostream &operator<<(std::ostream &output, Matrix &x)
+{
+    for (int i = 0; i < x.n; i++)
+    {
+        for (int j = 0; j < x.m; j++)
+        {
+            output << x << " ";
+        }
+        output << "\n";
+    }
+    return output;
+}
+Matrix Matrix::T() const
+{
+    Matrix tmp(m, n);
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            tmp.data[i * n + j] = data[j * m + i];
+        }
+    }
+    return move(tmp);
+}
+void Matrix::inspire(const Inspirer &x)
+{
+    for (int i = 0; i < n * m; i++)
+        data[i] = x.f(data[i]);
+}
+Matrix Matrix::identity(int size)
+{
+    return move(scalar(size, 1));
+}
+Matrix Matrix::scalar(int size, const DataType value)
+{
+    Matrix tmp(size, size);
+    for (int i = 0; i < size; i++)
+        tmp.data[i * size + i] = value;
+    return move(tmp);
+}

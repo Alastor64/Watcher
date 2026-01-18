@@ -1,2 +1,6 @@
 #pragma once
-typedef double DT;
+#include <iostream>
+typedef double DataType;
+using std::cin;
+using std::cout;
+using std::move;
