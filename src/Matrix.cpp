@@ -106,28 +106,37 @@ Matrix operator+(Matrix a)
 }
 Matrix &Matrix::operator+=(const Matrix &x) &
 {
-    return *this = *this + x;
+    return *this = move(*this) + x;
 }
-Matrix Matrix::operator-(const Matrix &b) const
+Matrix Matrix::operator-(const Matrix &b) &&
 {
-    return move(Matrix(*this) + -b);
-}
-Matrix Matrix::operator-() const
-{
-    Matrix tmp(*this);
+    if (n != b.n || m != b.m)
+        throw "invailed matrix minus for unequal size";
     for (int i = 0; i < n * m; i++)
-        tmp.data[i] = -tmp.data[i];
-    return move(tmp);
+    {
+        data[i] += b.data[i];
+    }
+    return move(*this);
+}
+Matrix Matrix::operator-(Matrix b) &
+{
+    if (n != b.n || m != b.m)
+        throw "invailed matrix minus for unequal size";
+    for (int i = 0; i < b.n * b.m; i++)
+    {
+        b.data[i] = data[i] - b.data[i];
+    }
+    return move(b);
+}
+Matrix operator-(Matrix a)
+{
+    for (int i = 0; i < a.n * a.m; i++)
+        a.data[i] = -a.data[i];
+    return move(a);
 }
 Matrix &Matrix::operator-=(const Matrix &x) &
 {
-    // if (n != x.n || m != x.m)
-    //     throw "invailed matrix minus for unequal size";
-    // for (int i = 0; i < n * m; i++)
-    // {
-    //     data[i] -= x.data[i];
-    // }
-    return (*this = *this - x);
+    return *this = move(*this) - x;
 }
 Matrix Matrix::operator*(const Matrix &x) const
 {
@@ -162,7 +171,7 @@ std::ostream &operator<<(std::ostream &output, Matrix &x)
     {
         for (int j = 0; j < x.m; j++)
         {
-            output << x << " ";
+            output << x.data[i * x.m + j] << " ";
         }
         output << "\n";
     }

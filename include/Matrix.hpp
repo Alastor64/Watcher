@@ -8,7 +8,6 @@ protected:
     int m;
     DataType *data;
     static Matrix add(Matrix &&a, const Matrix &b);
-    static Matrix neg(Matrix &&a);
 
 public:
     Matrix(const Matrix &);
@@ -26,8 +25,9 @@ public:
     Matrix operator+(Matrix) &;
     friend Matrix operator+(Matrix a);
     Matrix &operator+=(const Matrix &) &;
-    Matrix operator-(const Matrix &) const;
-    Matrix operator-() const;
+    Matrix operator-(const Matrix &) &&;
+    Matrix operator-(Matrix) &;
+    friend Matrix operator-(Matrix a);
     Matrix &operator-=(const Matrix &) &;
     Matrix operator*(const Matrix &) const;
     Matrix &operator*=(const Matrix &) &;
