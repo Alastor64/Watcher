@@ -1,5 +1,15 @@
 #include "Matrix.hpp"
 // protected
+Matrix Matrix::add(Matrix &&a, const Matrix &b)
+{
+    if (a.n != b.n || a.m != b.m)
+        throw "invailed matrix addition for unequal size";
+    for (int i = 0; i < a.n * b.m; i++)
+    {
+        a.data[i] += b.data[i];
+    }
+    return move(a);
+}
 // public:
 Matrix::Matrix(const Matrix &x)
 {
@@ -81,42 +91,38 @@ Matrix &Matrix::operator=(Matrix &&x) &
     }
     return *this;
 }
-Matrix operator+(const Matrix &a, const Matrix &b)
+
+Matrix operator+(Matrix &&a, Matrix &&b)
 {
-    cout << "l l \n"; // #
-    return move(Matrix(a) + b);
+    cout << "r r\n"; // #
+    return move(Matrix::add(move(a), b));
 }
 Matrix operator+(Matrix &&a, const Matrix &b)
 {
-    cout << "r l \n"; // #
-    if (a.n != b.n || a.m != b.m)
-        throw "invailed matrix addition for unequal size";
-    for (int i = 0; i < a.n * a.m; i++)
-    {
-        a.data[i] += b.data[i];
-    }
-    return move(a);
+    cout << "r l\n"; // #
+    return move(Matrix::add(move(a), b));
 }
 Matrix operator+(const Matrix &a, Matrix &&b)
 {
-    return move(b + a);
+    cout << "l r\n"; // #
+    return move(Matrix::add(move(b), a));
 }
-Matrix operator+(Matrix &&a, Matrix &&b)
+Matrix operator+(const Matrix &a, const Matrix &b)
 {
-    return move(b + a);
+    cout << "l l\n"; // #
+    return move(Matrix::add(Matrix(a), b));
 }
-Matrix Matrix::operator+() const
+Matrix operator+(Matrix a)
 {
-    cout << "l r \n"; // #
-    return move(Matrix(*this));
+    return move(a);
 }
 Matrix &Matrix::operator+=(const Matrix &x) &
 {
     return *this = *this + x;
 }
-Matrix operator-(const Matrix &a, const Matrix &b)
+Matrix Matrix::operator-(const Matrix &b) const
 {
-    return move(Matrix(a) + -b);
+    return move(Matrix(*this) + -b);
 }
 Matrix Matrix::operator-() const
 {

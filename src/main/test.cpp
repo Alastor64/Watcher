@@ -11,10 +11,12 @@ int main()
     // f(a);
     Matrix A(2, 2);
     Matrix B = -A;
+    Matrix C(2, 2);
+    C = Matrix(A);
     // B = A;
     // B += A;
     cout << "\n";
-    B = B + A + A + A + B - A;
+    B = +(A + A);
     // B = B;
     // B = B + B;
     // B += +-B;
