@@ -16,7 +16,7 @@ int main()
     // B = A;
     // B += A;
     cout << "\n";
-    B = +(A + A);
+    B = +(A + A + (A + A));
     // B = B;
     // B = B + B;
     // B += +-B;

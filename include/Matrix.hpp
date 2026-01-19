@@ -22,10 +22,8 @@ public:
     DataType &operator()(int index1, int index2) const;
     Matrix &operator=(const Matrix &) &;
     Matrix &operator=(Matrix &&) &;
-    friend Matrix operator+(Matrix &&, Matrix &&);
-    friend Matrix operator+(const Matrix &, Matrix &&);
-    friend Matrix operator+(Matrix &&, const Matrix &);
-    friend Matrix operator+(const Matrix &, const Matrix &);
+    Matrix operator+(const Matrix &) &&;
+    Matrix operator+(Matrix) &;
     friend Matrix operator+(Matrix a);
     Matrix &operator+=(const Matrix &) &;
     Matrix operator-(const Matrix &) const;

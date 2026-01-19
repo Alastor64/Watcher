@@ -92,25 +92,13 @@ Matrix &Matrix::operator=(Matrix &&x) &
     return *this;
 }
 
-Matrix operator+(Matrix &&a, Matrix &&b)
+Matrix Matrix::operator+(const Matrix &b) &&
 {
-    cout << "r r\n"; // #
-    return move(Matrix::add(move(a), b));
+    return add(move(*this), b);
 }
-Matrix operator+(Matrix &&a, const Matrix &b)
+Matrix Matrix::operator+(Matrix b) &
 {
-    cout << "r l\n"; // #
-    return move(Matrix::add(move(a), b));
-}
-Matrix operator+(const Matrix &a, Matrix &&b)
-{
-    cout << "l r\n"; // #
-    return move(Matrix::add(move(b), a));
-}
-Matrix operator+(const Matrix &a, const Matrix &b)
-{
-    cout << "l l\n"; // #
-    return move(Matrix::add(Matrix(a), b));
+    return add(move(b), *this);
 }
 Matrix operator+(Matrix a)
 {
