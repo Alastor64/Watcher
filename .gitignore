@@ -1,6 +1,7 @@
 *.in
 *.out
 *.exe
+trash can/
 .vscode/
 bin/
 build/

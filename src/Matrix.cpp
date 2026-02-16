@@ -11,6 +11,11 @@ Matrix Matrix::add(Matrix &&a, const Matrix &b)
     return move(a);
 }
 // public:
+Matrix::Matrix()
+{
+    n = m = 0;
+    data = nullptr;
+}
 Matrix::Matrix(const Matrix &x)
 {
     cout << "execute copy construct\n"; // #

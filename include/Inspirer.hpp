@@ -1,5 +1,5 @@
 #pragma once
-#include "Mytypedef.hpp"
+#include "Mydef.hpp"
 class Inspirer
 {
 public:

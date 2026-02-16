@@ -1,5 +1,5 @@
 #pragma once
-#include "Mytypedef.hpp"
+#include "Mydef.hpp"
 #include "Inspirer.hpp"
 class Matrix
 {
@@ -10,6 +10,7 @@ protected:
     static Matrix add(Matrix &&a, const Matrix &b);
 
 public:
+    Matrix();
     Matrix(const Matrix &);
     Matrix(Matrix &&);
     Matrix(int _n, int _m);
