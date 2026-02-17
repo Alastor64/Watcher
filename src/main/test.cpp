@@ -1,30 +1,23 @@
 #include "Matrix.hpp"
-template <typename T>
-void f(T &&x)
-{
-    cout << x << "\n";
-}
+#include <iostream>
+#include "Backup.hpp"
 int main()
 {
-    // f(2);
-    // int a = 3;
-    // f(a);
-    Matrix A(Matrix::scalar(2, 3));
-    Matrix B = -A;
-    Matrix C(2, 2);
-    C = Matrix(A);
-    // B = A;
-    // B += A;
-    cout << "\n";
-    B += A;
-    cout << B;
-    cout << "\n";
-    B = -A - (A - A - A - (A - A));
-    // B = B;
-    // B = B + B;
-    // B += +-B;
-    // cout << "\n";
-    // B = B * A;
-    // B *= A;
+    using namespace std;
+    try
+    {
+        Backup<pair<int, int>> a("pii");
+        // a = pair<int, int>(8, 8);
+        // a.update();
+        // Backup<Matrix> a("data", Matrix::identity(7));
+        cout << a->first << " " << a->second << "\n";
+        cin >> a->second;
+        Backup<int> b("pii");
+        a.update();
+    }
+    catch (FileError a)
+    {
+        cout << a.what() << "\n";
+    }
     return 0;
 }
