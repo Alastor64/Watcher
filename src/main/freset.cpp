@@ -1,10 +1,9 @@
 #include "Backup.hpp"
-#include <iostream>
-#include <fstream>
 #include <string>
+#include "Mytypedef.hpp"
 int main(int argn, const char *args[])
 {
-    using namespace std;
+    // using namespace std;
     // string s;
     // cin >> s;
     fstream f;

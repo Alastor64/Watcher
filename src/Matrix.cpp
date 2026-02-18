@@ -10,10 +10,22 @@ Matrix Matrix::add(Matrix &&a, const Matrix &b)
     }
     return move(a);
 }
+// void Matrix::Backup_write(std::fstream &fio)
+// {
+// }
 // public:
+Matrix::Matrix()
+{
+    data = nullptr;
+}
 Matrix::Matrix(const Matrix &x)
 {
-    cout << "execute copy construct\n"; // #
+    // cout << "execute copy construct\n"; // #
+    if (!x.data)
+    {
+        data = nullptr;
+        return;
+    }
     n = x.n;
     m = x.m;
     data = new DataType[n * m];
@@ -22,7 +34,7 @@ Matrix::Matrix(const Matrix &x)
 }
 Matrix::Matrix(Matrix &&x)
 {
-    cout << "execute move construct\n"; // #
+    // cout << "execute move construct\n"; // #
     n = x.n;
     m = x.m;
     data = x.data;
@@ -30,15 +42,19 @@ Matrix::Matrix(Matrix &&x)
 }
 Matrix::Matrix(int _n, int _m) : n(_n), m(_m)
 {
-    cout << "execute construct\n"; // #
+    if (!n || !m)
+    {
+        data = nullptr;
+        return;
+    }
+    // cout << "execute construct\n"; // #
     data = new DataType[n * m];
     for (int i = 0; i < n * m; i++)
         data[i] = 0;
 }
 Matrix::~Matrix()
 {
-    if (data)
-        delete[] data;
+    delete[] data;
 }
 const int Matrix::width() const
 {
@@ -64,14 +80,22 @@ DataType &Matrix::operator()(int index1, int index2) const
 }
 Matrix &Matrix::operator=(const Matrix &x) &
 {
-    cout << "excute =\n"; // #
+    // cout << "excute =\n"; // #
     if (data != x.data)
     {
+        if (!x.data)
+        {
+            delete[] data;
+            data = nullptr;
+            return *this;
+        }
+        if (n * m != x.n * x.m)
+        {
+            delete[] data;
+            data = new DataType[x.n * x.m];
+        }
         n = x.n;
         m = x.m;
-        if (data)
-            delete[] data;
-        data = new DataType[n * m];
         for (int i = 0; i < n * m; i++)
             data[i] = x.data[i];
     }
@@ -79,13 +103,12 @@ Matrix &Matrix::operator=(const Matrix &x) &
 }
 Matrix &Matrix::operator=(Matrix &&x) &
 {
-    cout << "excute move=\n"; // #
+    // cout << "excute move=\n"; // #
     if (data != x.data)
     {
         n = x.n;
         m = x.m;
-        if (data)
-            delete[] data;
+        delete[] data;
         data = x.data;
         x.data = nullptr;
     }

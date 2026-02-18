@@ -1,19 +1,28 @@
 #pragma once
+// #include "Backup.hpp"
 #include "Mytypedef.hpp"
 #include "Inspirer.hpp"
+// template <class T>
+// class Backup;
+// template <class T>
+// class Backup;
 class Matrix
 {
+    friend class Backup<Matrix>;
+
 protected:
     int n;
     int m;
     DataType *data;
     static Matrix add(Matrix &&a, const Matrix &b);
-
+    // void Backup_write(std::fstream &fio);
 public:
+    Matrix();
     Matrix(const Matrix &);
     Matrix(Matrix &&);
     Matrix(int _n, int _m);
     virtual ~Matrix();
+    // friend void Backup<Matrix>::write();
     const int width() const;
     const int height() const;
     DataType *operator[](int index) const;
