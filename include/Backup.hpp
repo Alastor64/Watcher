@@ -13,6 +13,7 @@ template <class T>
 class Backup
 {
     typedef std::ios_base ios;
+    static constexpr int VS = std::is_polymorphic_v<T> * sizeof(VPTR);
 
 private:
     T data;
@@ -20,13 +21,13 @@ private:
     void write()
     {
         fio.seekp(sizeof(int));
-        fio.write(reinterpret_cast<const char *>(&data), sizeof(T));
+        fio.write(reinterpret_cast<const char *>(&data) + VS, sizeof(T) - VS);
         fio.flush();
     }
     void read()
     {
         fio.seekg(sizeof(int));
-        fio.read(reinterpret_cast<char *>(&data), sizeof(T));
+        fio.read(reinterpret_cast<char *>(&data) + VS, sizeof(T) - VS);
     }
 
 public:

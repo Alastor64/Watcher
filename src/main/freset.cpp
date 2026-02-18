@@ -2,13 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-int main()
+int main(int argn, const char *args[])
 {
     using namespace std;
-    string s;
-    cin >> s;
+    // string s;
+    // cin >> s;
     fstream f;
-    f.open(s.c_str(), ios::out | ios::in | ios::binary);
+    f.open(args[1], ios::out | ios::in | ios::binary);
     if (f)
     {
         int tmp = 0;
