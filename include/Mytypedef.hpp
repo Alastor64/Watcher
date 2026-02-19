@@ -12,5 +12,6 @@ class VPTR
     virtual ~VPTR() {}
 };
 class Matrix;
+class Web;
 template <class T>
 class Backup;
