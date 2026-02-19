@@ -1,5 +1,5 @@
 #pragma once
-// #include "Backup.hpp"
+#include "Backup.hpp"
 #include "Mytypedef.hpp"
 #include "Inspirer.hpp"
 // template <class T>
@@ -8,7 +8,8 @@
 // class Backup;
 class Matrix
 {
-    friend class Backup<Matrix>;
+    friend void Backup<Matrix>::write(const Matrix &data, fstream &fio);
+    friend void Backup<Matrix>::read(Matrix &data, fstream &fio);
 
 protected:
     int n;

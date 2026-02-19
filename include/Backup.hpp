@@ -1,6 +1,6 @@
 #pragma once
 #include "Mytypedef.hpp"
-#include "Matrix.hpp"
+// #include "Matrix.hpp"
 
 // class TestType
 // {
@@ -23,10 +23,12 @@ public:
 template <class T>
 class Backup
 {
+    template <class _T>
+    friend class Backup;
     static constexpr int VS = std::is_polymorphic_v<T> * sizeof(VPTR);
 
 protected:
-    T data;
+    T *data;
     fstream fio;
     void set_FREE()
     {
@@ -49,10 +51,21 @@ protected:
     }
 
 public:
+    static void write(const T &data, fstream &fio)
+    {
+        fio.write(reinterpret_cast<const char *>(&data) + VS, sizeof(T) - VS);
+        fio.flush();
+    }
+    static void read(T &data, fstream &fio)
+    {
+        fio.read(reinterpret_cast<char *>(&data) + VS, sizeof(T) - VS);
+    }
+
+public:
     static constexpr int USED = 1;
     static constexpr int FREE = 0;
     template <typename... Args>
-    Backup(const char *fileName, Args... args) : data(args...)
+    Backup(const char *fileName, Args &&...args) : data(new T(std::forward<Args>(args)...))
     {
         fio.open(fileName, ios::out | ios::in | ios::binary);
         if (fio)
@@ -64,11 +77,11 @@ public:
         fio.open(fileName, ios::out | ios::trunc | ios::binary);
         set_USED();
         fio.seekp(sizeof(int));
-        Backup<T>::write(data, fio);
+        Backup<T>::write(*data, fio);
         fio.close();
         fio.open(fileName, ios::out | ios::in | ios::binary);
     }
-    Backup(const char *fileName) : data()
+    Backup(const char *fileName) : data(new T())
     {
         // cout << "?\n";
         fio.open(fileName, ios::out | ios::in | ios::binary);
@@ -77,13 +90,13 @@ public:
             if (get_state() != FREE)
                 throw FileError();
             fio.seekg(sizeof(int));
-            Backup<T>::read(data, fio);
+            Backup<T>::read(*data, fio);
         }
         else
         {
             fio.open(fileName, ios::out | ios::trunc | ios::binary);
             fio.seekp(sizeof(int));
-            Backup<T>::write(data, fio);
+            Backup<T>::write(*data, fio);
             fio.close();
             fio.open(fileName, ios::out | ios::in | ios::binary);
         }
@@ -93,6 +106,7 @@ public:
     {
         set_FREE();
         fio.close();
+        delete data;
     }
     Backup(const Backup &) = delete;
     Backup(Backup &&) = delete;
@@ -100,84 +114,40 @@ public:
     Backup &operator=(Backup &&) = delete;
     T &operator=(const T &tmp)
     {
-        return data = tmp;
+        return *data = tmp;
     }
     T &operator=(T &&tmp)
     {
-        return data = move(tmp);
+        return *data = move(tmp);
     }
     T *operator->()
     {
-        return &data;
+        return data;
     }
     const T *operator->() const
     {
-        return &data;
+        return data;
     }
     operator T &()
     {
-        return data;
+        return *data;
     }
     template <class Arg>
     auto operator[](Arg index)
     {
-        return data[index];
+        return (*data)[index];
     }
     template <typename... Args>
     auto operator()(Args... args)
     {
-        return data(args...);
-    }
-    static void write(const T &data, fstream &fio)
-    {
-        fio.write(reinterpret_cast<const char *>(&data) + VS, sizeof(T) - VS);
-        fio.flush();
-    }
-    static void read(T &data, fstream &fio)
-    {
-        fio.read(reinterpret_cast<char *>(&data) + VS, sizeof(T) - VS);
+        return (*data)(args...);
     }
     void update()
     {
         fio.seekp(sizeof(int));
-        write(data, fio);
+        write(*data, fio);
     }
 };
-template <>
-void Backup<Matrix>::write(const Matrix &data, fstream &fio)
-{
-    if (data.data)
-    {
-        // cout << data.data[15] << bool(fio) << "\n";
-        fio.write(reinterpret_cast<const char *>(&data.n), sizeof(data.n));
-        fio.write(reinterpret_cast<const char *>(&data.m), sizeof(data.m));
-        // cout << data.n * data.m * sizeof(DataType) << "\n";
-        // fio.flush();
-        // cout << bool(reinterpret_cast<const char *>(&data.data[0])) << "\n";
-        // cout <<
-        fio.write(reinterpret_cast<const char *>(&data.data[0]), data.n * data.m * sizeof(DataType));
-
-        // .bad() << "\n";
-    }
-    else
-    {
-        int tmp = 0;
-        fio.write(reinterpret_cast<const char *>(&tmp), sizeof(int));
-        fio.write(reinterpret_cast<const char *>(&tmp), sizeof(int));
-    }
-    fio.flush();
-}
-template <>
-void Backup<Matrix>::read(Matrix &data, fstream &fio)
-{
-    int n, m;
-    fio.read(reinterpret_cast<char *>(&n), sizeof(n));
-    fio.read(reinterpret_cast<char *>(&m), sizeof(m));
-    Matrix tmp(n, m);
-    if (tmp.data)
-        fio.read(reinterpret_cast<char *>(tmp.data), n * m * sizeof(DataType));
-    data = move(tmp);
-}
 // template <>
 // void Backup<TestType>::write(const TestType &data, fstream &fio)
 // {

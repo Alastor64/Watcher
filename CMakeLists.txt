@@ -7,3 +7,6 @@ aux_source_directory(./src SRC_LIST)
 add_executable(watcher ${SRC_LIST} ./src/main/watcher.cpp)
 add_executable(test ${SRC_LIST} ./src/main/test.cpp)
 add_executable(freset ${SRC_LIST} ./src/main/freset.cpp)
+message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "C++ compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
+
