@@ -24,9 +24,14 @@ class Backup
 {
     template <class _T>
     friend class Backup;
+    // template <class _T *>
+    // friend class Backup;
+
     static constexpr int VS = std::is_polymorphic_v<T> * sizeof(VPTR);
 
 protected:
+    static constexpr int USED = 1;
+    static constexpr int FREE = 0;
     T *data;
     fstream fio;
     void set_FREE()
@@ -54,7 +59,7 @@ public:
     {
         if constexpr (is_Vector<T>::value)
         {
-            cout << "?\n";
+            // cout << "?\n";
             int n = data->data.size();
             fio.write(reinterpret_cast<const char *>(&n), sizeof(n));
             for (int i = 0; i < n; i++)
@@ -86,10 +91,13 @@ public:
             fio.read(reinterpret_cast<char *>(data) + VS, sizeof(T) - VS);
         }
     }
+    void update()
+    {
+        fio.seekp(sizeof(int));
+        write(data, fio);
+    }
 
 public:
-    static constexpr int USED = 1;
-    static constexpr int FREE = 0;
     template <typename... Args>
     Backup(const char *fileName, Args &&...args) : data(new T(std::forward<Args>(args)...))
     {
@@ -146,15 +154,25 @@ public:
     {
         return *data = move(tmp);
     }
+    // T *&operator=(T *const tmp)
+    // {
+    //     delete[] data;
+    //     data = tmp;
+    //     return data;
+    // }
     T *operator->()
     {
         return data;
     }
-    const T *operator->() const
-    {
-        return data;
-    }
+    // const T *operator->() const
+    // {
+    //     return data;
+    // }
     operator T &()
+    {
+        return *data;
+    }
+    T &operator*()
     {
         return *data;
     }
@@ -168,9 +186,20 @@ public:
     {
         return (*data)(args...);
     }
-    void update()
-    {
-        fio.seekp(sizeof(int));
-        write(data, fio);
-    }
 };
+template <class T>
+class Backup<const T>
+{
+    static_assert("Backup of const type is meaningless!");
+};
+// template <class T *>
+// class Backup
+// {
+//     template <class _T>
+//     friend class Backup;
+//     template <class _T *>
+//     friend class Backup;
+
+// protected:
+//     void write(const T *data, fstream &fio)
+// };

@@ -50,6 +50,18 @@ public:
     {
         data.pop_back();
     }
+    int size()
+    {
+        return data.size();
+    }
+    T &back()
+    {
+        return data.back();
+    }
+    T &front()
+    {
+        return data.front();
+    }
     T &operator[](int index)
     {
         return data.at(index);

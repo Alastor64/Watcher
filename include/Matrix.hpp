@@ -12,6 +12,7 @@ class Matrix
     friend void Backup<Matrix>::read(Matrix *data, fstream &fio);
 
 protected:
+    static DataType _0() { return 0; }
     int n;
     int m;
     DataType *data;
@@ -21,7 +22,8 @@ public:
     Matrix();
     Matrix(const Matrix &);
     Matrix(Matrix &&);
-    Matrix(int _n, int _m);
+    // Matrix(int _n, int _m);
+    Matrix(int _n, int _m, DataType (*Rand)() = _0);
     virtual ~Matrix();
     // friend void Backup<Matrix>::write();
     const int width() const;
@@ -44,7 +46,8 @@ public:
     friend std::istream &operator>>(std::istream &, Matrix &);
     friend std::ostream &operator<<(std::ostream &, const Matrix &);
     Matrix T() const;
-    void inspire(const Inspirer &);
+    void inspire(const Inspirer *);
+    void derivative(const Inspirer *);
     static Matrix identity(int size);
     static Matrix scalar(int size, const DataType value);
 };

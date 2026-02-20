@@ -40,7 +40,7 @@ Matrix::Matrix(Matrix &&x)
     data = x.data;
     x.data = nullptr;
 }
-Matrix::Matrix(int _n, int _m) : n(_n), m(_m)
+Matrix::Matrix(int _n, int _m, DataType (*Rand)()) : n(_n), m(_m)
 {
     if (!n || !m)
     {
@@ -50,7 +50,7 @@ Matrix::Matrix(int _n, int _m) : n(_n), m(_m)
     // cout << "execute construct\n"; // #
     data = new DataType[n * m];
     for (int i = 0; i < n * m; i++)
-        data[i] = 0;
+        data[i] = Rand();
 }
 Matrix::~Matrix()
 {
@@ -212,10 +212,15 @@ Matrix Matrix::T() const
     }
     return move(tmp);
 }
-void Matrix::inspire(const Inspirer &x)
+void Matrix::inspire(const Inspirer *x)
 {
     for (int i = 0; i < n * m; i++)
-        data[i] = x.f(data[i]);
+        data[i] = x->f(data[i]);
+}
+void Matrix::derivative(const Inspirer *x)
+{
+    for (int i = 0; i < n * m; i++)
+        data[i] = x->df(data[i]);
 }
 Matrix Matrix::identity(int size)
 {
