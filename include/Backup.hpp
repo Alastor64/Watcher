@@ -2,14 +2,6 @@
 #include "Mytypedef.hpp"
 // #include "Matrix.hpp"
 
-// class TestType
-// {
-// public:
-//     Matrix a;
-//     template <class... Args>
-//     TestType(Args... args) : a(args...) {}
-// };
-
 class FileError
 {
 public:
@@ -18,8 +10,15 @@ public:
         return "Two Backups use the same file!";
     }
 };
-// template <class T>
-// constexpr bool is_specially_stored = std::is_same_v<T, Matrix>;
+template <class>
+class is_Vector : public std::false_type
+{
+};
+template <class T>
+class is_Vector<Vector<T>> : public std::true_type
+{
+};
+
 template <class T>
 class Backup
 {
@@ -51,14 +50,41 @@ protected:
     }
 
 public:
-    static void write(const T &data, fstream &fio)
+    static void write(const T *data, fstream &fio)
     {
-        fio.write(reinterpret_cast<const char *>(&data) + VS, sizeof(T) - VS);
-        fio.flush();
+        if constexpr (is_Vector<T>::value)
+        {
+            cout << "?\n";
+            int n = data->data.size();
+            fio.write(reinterpret_cast<const char *>(&n), sizeof(n));
+            for (int i = 0; i < n; i++)
+                Backup<typename decltype(data->data)::value_type>::write(&data->data.at(i), fio);
+            fio.flush();
+        }
+        else
+        {
+            fio.write(reinterpret_cast<const char *>(data) + VS, sizeof(T) - VS);
+            fio.flush();
+        }
     }
-    static void read(T &data, fstream &fio)
+    static void read(T *data, fstream &fio)
     {
-        fio.read(reinterpret_cast<char *>(&data) + VS, sizeof(T) - VS);
+        if constexpr (is_Vector<T>())
+        {
+            int n;
+            typename decltype(data->data)::value_type tmp;
+            fio.read(reinterpret_cast<char *>(&n), sizeof(n));
+            data->data.clear();
+            for (int i = 0; i < n; i++)
+            {
+                Backup<typename decltype(data->data)::value_type>::read(&tmp, fio);
+                data->push(move(tmp));
+            }
+        }
+        else
+        {
+            fio.read(reinterpret_cast<char *>(data) + VS, sizeof(T) - VS);
+        }
     }
 
 public:
@@ -77,7 +103,7 @@ public:
         fio.open(fileName, ios::out | ios::trunc | ios::binary);
         set_USED();
         fio.seekp(sizeof(int));
-        Backup<T>::write(*data, fio);
+        Backup<T>::write(data, fio);
         fio.close();
         fio.open(fileName, ios::out | ios::in | ios::binary);
     }
@@ -90,13 +116,13 @@ public:
             if (get_state() != FREE)
                 throw FileError();
             fio.seekg(sizeof(int));
-            Backup<T>::read(*data, fio);
+            Backup<T>::read(data, fio);
         }
         else
         {
             fio.open(fileName, ios::out | ios::trunc | ios::binary);
             fio.seekp(sizeof(int));
-            Backup<T>::write(*data, fio);
+            Backup<T>::write(data, fio);
             fio.close();
             fio.open(fileName, ios::out | ios::in | ios::binary);
         }
@@ -133,28 +159,18 @@ public:
         return *data;
     }
     template <class Arg>
-    auto operator[](Arg index)
+    auto operator[](Arg index) -> decltype((*data)[index])
     {
         return (*data)[index];
     }
     template <typename... Args>
-    auto operator()(Args... args)
+    auto operator()(Args... args) -> decltype((*data)(args...))
     {
         return (*data)(args...);
     }
     void update()
     {
         fio.seekp(sizeof(int));
-        write(*data, fio);
+        write(data, fio);
     }
 };
-// template <>
-// void Backup<TestType>::write(const TestType &data, fstream &fio)
-// {
-//     Backup<Matrix>::write(data.a, fio);
-// }
-// template <>
-// void Backup<TestType>::read(TestType &data, fstream &fio)
-// {
-//     Backup<Matrix>::read(data.a, fio);
-// }

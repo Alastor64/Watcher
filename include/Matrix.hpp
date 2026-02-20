@@ -8,8 +8,8 @@
 // class Backup;
 class Matrix
 {
-    friend void Backup<Matrix>::write(const Matrix &data, fstream &fio);
-    friend void Backup<Matrix>::read(Matrix &data, fstream &fio);
+    friend void Backup<Matrix>::write(const Matrix *data, fstream &fio);
+    friend void Backup<Matrix>::read(Matrix *data, fstream &fio);
 
 protected:
     int n;
@@ -42,9 +42,20 @@ public:
     Matrix operator*(const Matrix &) const;
     Matrix &operator*=(const Matrix &) &;
     friend std::istream &operator>>(std::istream &, Matrix &);
-    friend std::ostream &operator<<(std::ostream &, Matrix &);
+    friend std::ostream &operator<<(std::ostream &, const Matrix &);
     Matrix T() const;
     void inspire(const Inspirer &);
     static Matrix identity(int size);
     static Matrix scalar(int size, const DataType value);
 };
+
+// class TestType
+// {
+//     friend void Backup<TestType>::write(const TestType &data, fstream &fio);
+//     friend void Backup<TestType>::read(TestType &data, fstream &fio);
+
+// public:
+//     Matrix a;
+//     Matrix b;
+//     Matrix c;
+// };

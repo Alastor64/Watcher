@@ -188,7 +188,7 @@ std::istream &operator>>(std::istream &input, Matrix &x)
         input >> x.data[i];
     return input;
 }
-std::ostream &operator<<(std::ostream &output, Matrix &x)
+std::ostream &operator<<(std::ostream &output, const Matrix &x)
 {
     for (int i = 0; i < x.n; i++)
     {
