@@ -15,14 +15,27 @@ public:
     {
         data.clear();
     }
-    Vector(const Vector &) = delete;
+    Vector(const Vector &x)
+    {
+        data.clear();
+        for (int i = 0; i < x.data.size(); i++)
+            data.push_back(x.data.at(i));
+    }
     Vector(Vector &&) = delete;
     Vector &operator=(const Vector &x)
     {
-        if (data.size() != x.data.size())
-            throw "unequal size!";
-        for (int i = 0; i < data.size(); i++)
-            data.at(i) = x.data.at(i);
+        if (data.empty())
+        {
+            for (int i = 0; i < x.data.size(); i++)
+                data.push_back(x.data.at(i));
+        }
+        else
+        {
+            if (data.size() != x.data.size())
+                throw "unequal size!";
+            for (int i = 0; i < data.size(); i++)
+                data.at(i) = x.data.at(i);
+        }
         return *this;
     }
     Vector &operator=(Vector &&) = delete;
@@ -50,6 +63,10 @@ public:
     {
         data.pop_back();
     }
+    void clear()
+    {
+        data.clear();
+    }
     int size()
     {
         return data.size();
@@ -71,5 +88,15 @@ public:
         for (int i = 0; i < x.data.size(); i++)
             output << x.data.at(i) << "\n";
         return output;
+    }
+    Vector &operator-=(const Vector &x)
+    {
+        if (data.size() != x.data.size())
+            throw "mismatching args size!";
+        for (int i = 0; i < data.size(); i++)
+        {
+            data.at(i) -= x.data.at(i);
+        }
+        return *this;
     }
 };

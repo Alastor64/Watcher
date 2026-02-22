@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-typedef double DataType;
+typedef long double DataType;
 using std::cin;
 using std::cout;
 using std::move;
@@ -15,6 +15,8 @@ class VPTR
 };
 class Matrix;
 class Web;
+class Knowledge;
+class Gradient;
 template <class T>
 class Backup;
 template <class T>

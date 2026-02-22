@@ -12,10 +12,10 @@ class Matrix
     friend void Backup<Matrix>::read(Matrix *data, fstream &fio);
 
 protected:
-    static DataType _0() { return 0; }
     int n;
     int m;
     DataType *data;
+    static DataType _0();
     static Matrix add(Matrix &&a, const Matrix &b);
     // void Backup_write(std::fstream &fio);
 public:
@@ -37,12 +37,14 @@ public:
     Matrix operator+(Matrix) &;
     friend Matrix operator+(Matrix a);
     Matrix &operator+=(const Matrix &) &;
-    Matrix operator-(const Matrix &) &&;
-    Matrix operator-(Matrix) &;
+    Matrix operator-(const Matrix &) const &&;
+    Matrix operator-(Matrix) const &;
     friend Matrix operator-(Matrix a);
     Matrix &operator-=(const Matrix &) &;
     Matrix operator*(const Matrix &) const;
+    Matrix operator*(const DataType &) const;
     Matrix &operator*=(const Matrix &) &;
+    Matrix &operator*=(const DataType &) &;
     friend std::istream &operator>>(std::istream &, Matrix &);
     friend std::ostream &operator<<(std::ostream &, const Matrix &);
     Matrix T() const;

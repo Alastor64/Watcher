@@ -1,5 +1,6 @@
 #include "Matrix.hpp"
 // protected
+DataType Matrix::_0() { return 0; }
 Matrix Matrix::add(Matrix &&a, const Matrix &b)
 {
     if (a.n != b.n || a.m != b.m)
@@ -131,17 +132,17 @@ Matrix &Matrix::operator+=(const Matrix &x) &
 {
     return *this = move(*this) + x;
 }
-Matrix Matrix::operator-(const Matrix &b) &&
+Matrix Matrix::operator-(const Matrix &b) const &&
 {
     if (n != b.n || m != b.m)
         throw "invailed matrix minus for unequal size";
     for (int i = 0; i < n * m; i++)
     {
-        data[i] += b.data[i];
+        data[i] -= b.data[i];
     }
     return move(*this);
 }
-Matrix Matrix::operator-(Matrix b) &
+Matrix Matrix::operator-(Matrix b) const &
 {
     if (n != b.n || m != b.m)
         throw "invailed matrix minus for unequal size";
@@ -178,7 +179,18 @@ Matrix Matrix::operator*(const Matrix &x) const
     }
     return move(tmp);
 }
+Matrix Matrix::operator*(const DataType &x) const
+{
+    Matrix tmp(*this);
+    for (int i = 0; i < n * m; i++)
+        tmp.data[i] *= x;
+    return move(tmp);
+}
 Matrix &Matrix::operator*=(const Matrix &x) &
+{
+    return *this = *this * x;
+}
+Matrix &Matrix::operator*=(const DataType &x) &
 {
     return *this = *this * x;
 }

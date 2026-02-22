@@ -22,8 +22,8 @@ class is_Vector<Vector<T>> : public std::true_type
 template <class T>
 class Backup
 {
-    template <class _T>
-    friend class Backup;
+    // template <class _T>
+    // friend class Backup;
     // template <class _T *>
     // friend class Backup;
 
@@ -96,6 +96,11 @@ public:
         fio.seekp(sizeof(int));
         write(data, fio);
     }
+    void close()
+    {
+        set_FREE();
+        fio.close();
+    }
 
 public:
     template <typename... Args>
@@ -153,6 +158,11 @@ public:
     T &operator=(T &&tmp)
     {
         return *data = move(tmp);
+    }
+    template <class Arg>
+    decltype(auto) operator-=(Arg &&arg)
+    {
+        return data->operator-=(std::forward<Arg>(arg));
     }
     // T *&operator=(T *const tmp)
     // {

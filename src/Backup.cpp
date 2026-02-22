@@ -2,6 +2,8 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
 #include "Web.hpp"
+#include "Data.hpp"
+#include "Gradient.hpp"
 template <>
 void Backup<Matrix>::write(const Matrix *data, fstream &fio)
 {
@@ -67,6 +69,7 @@ void Backup<Inspirer *>::read(Inspirer **data, fstream &fio)
 template <>
 void Backup<Web>::write(const Web *data, fstream &fio)
 {
+    Backup<Vector<Matrix>>::write(&data->tmps, fio);
     Backup<Vector<Matrix>>::write(&data->cells, fio);
     Backup<Vector<Matrix>>::write(&data->doors, fio);
     Backup<Vector<Matrix>>::write(&data->edges, fio);
@@ -75,11 +78,45 @@ void Backup<Web>::write(const Web *data, fstream &fio)
 template <>
 void Backup<Web>::read(Web *data, fstream &fio)
 {
+    Backup<Vector<Matrix>>::read(&data->tmps, fio);
     Backup<Vector<Matrix>>::read(&data->cells, fio);
     Backup<Vector<Matrix>>::read(&data->doors, fio);
     Backup<Vector<Matrix>>::read(&data->edges, fio);
     Backup<Inspirer *>::read(&data->inspirer, fio);
 }
+template <>
+void Backup<Knowledge>::write(const Knowledge *data, fstream &fio)
+{
+    Backup<Vector<Matrix>>::write(&data->input, fio);
+    Backup<Vector<Matrix>>::write(&data->output, fio);
+}
+template <>
+void Backup<Knowledge>::read(Knowledge *data, fstream &fio)
+{
+    Backup<Vector<Matrix>>::read(&data->input, fio);
+    Backup<Vector<Matrix>>::read(&data->output, fio);
+}
+
+template <>
+void Backup<Gradient>::write(const Gradient *data, fstream &fio)
+{
+    Backup<Vector<Matrix>>::write(&data->doors, fio);
+    Backup<Vector<Matrix>>::write(&data->edges, fio);
+}
+template <>
+void Backup<Gradient>::read(Gradient *data, fstream &fio)
+{
+    Backup<Vector<Matrix>>::read(&data->doors, fio);
+    Backup<Vector<Matrix>>::read(&data->edges, fio);
+}
+// template <>
+// void Backup<>::write(const *data, fstream &fio)
+// {
+// }
+// template <>
+// void Backup<>::read(*data, fstream &fio)
+// {
+// }
 // template <>
 // void Backup<Vector<Matrix>>::write(const Vector<Matrix> *data, fstream &fio) {}
 // template <>
