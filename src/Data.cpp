@@ -1,6 +1,6 @@
 #include "Data.hpp"
 
-void Knowledge::load_idxX_ubyte()
+void Knowledge::load_idxX_ubyte(int L, int R)
 {
     fstream fi("train-images.idx3-ubyte", ios::in | ios::binary);
     int tmp, n;
@@ -8,12 +8,15 @@ void Knowledge::load_idxX_ubyte()
     if (tmp != 2051)
         throw "wrong file!";
     Backup<int>::read(&n, fi);
+    if (n < R)
+        throw "file too small!";
     int h, w;
     Backup<int>::read(&h, fi);
     Backup<int>::read(&w, fi);
     unsigned char bit;
     Matrix pic(h * w, 1);
-    for (int i = 0; i < n; i++)
+    fi.seekg(4 * sizeof(int) + L * sizeof(unsigned char) * h * w);
+    for (int i = L; i < R; i++)
     {
         for (int j = 0; j < h * w; j++)
         {
@@ -30,7 +33,8 @@ void Knowledge::load_idxX_ubyte()
     Backup<int>::read(&tmp, fi);
     if (tmp != n)
         throw "mismatching";
-    for (int i = 0; i < n; i++)
+    fi.seekg(2 * sizeof(int) + L * sizeof(unsigned char));
+    for (int i = L; i < R; i++)
     {
         Backup<unsigned char>::read(&bit, fi);
         if (bit > 9)

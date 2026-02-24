@@ -67,7 +67,7 @@ public:
     {
         data.clear();
     }
-    int size()
+    int size() const
     {
         return data.size();
     }
@@ -80,6 +80,10 @@ public:
         return data.front();
     }
     T &operator[](int index)
+    {
+        return data.at(index);
+    }
+    const T &operator[](int index) const
     {
         return data.at(index);
     }
@@ -96,6 +100,16 @@ public:
         for (int i = 0; i < data.size(); i++)
         {
             data.at(i) -= x.data.at(i);
+        }
+        return *this;
+    }
+    Vector &operator+=(const Vector &x)
+    {
+        if (data.size() != x.data.size())
+            throw "mismatching args size!";
+        for (int i = 0; i < data.size(); i++)
+        {
+            data.at(i) += x.data.at(i);
         }
         return *this;
     }

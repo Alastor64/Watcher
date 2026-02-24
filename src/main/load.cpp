@@ -43,8 +43,49 @@ void addition()
     }
     data.update();
 }
+void MNIST()
+{
+    Backup<Knowledge> data("minist-train");
+    data->load_idxX_ubyte(0, 60000);
+    data.update();
+}
 int main()
 {
-    addition();
+    // MNIST();
+    Backup<Knowledge> data("minist-train");
+    data.close();
+    Backup<Knowledge> sm("minist-train-half1");
+    for (int i = 0; i < 30000; i++)
+    {
+        sm->input.push(data->input[i]);
+        sm->output.push(data->output[i]);
+    }
+    sm.update();
+    Backup<Knowledge> sm2("minist-train-half2");
+    for (int i = 30000; i < 60000; i++)
+    {
+        sm2->input.push(data->input[i]);
+        sm2->output.push(data->output[i]);
+    }
+    sm2.update();
+    // for (int t = 0; t < 10; t++)
+    //     for (int i = 0; i < 28; i++)
+    //     {
+    //         for (int j = 0; j < 28; j++)
+    //         {
+    //             DataType tmp = sm->input[t](i * 28 + j);
+    //             if (tmp < 0.25)
+    //                 cout << " ";
+    //             else if (tmp < 0.5)
+    //                 cout << ".";
+    //             else if (tmp < 0.75)
+    //                 cout << "%";
+    //             else if (tmp <= 1)
+    //                 cout << "#";
+    //             else
+    //                 throw;
+    //         }
+    //         cout << "\n";
+    //     }
     return 0;
 }

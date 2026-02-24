@@ -13,4 +13,5 @@ public:
     Vector<Matrix> doors;
     Vector<Matrix> edges;
     Gradient &operator*=(const DataType &x) &;
+    Gradient &operator+=(const Gradient &x) &;
 };

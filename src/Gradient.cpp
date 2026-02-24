@@ -1,4 +1,5 @@
 #include "Gradient.hpp"
+#include "Vector.hpp"
 DataType DifSqr(const Matrix &result, const Matrix &answer)
 {
     DataType sum = 0;
@@ -13,9 +14,39 @@ Matrix dDifSqr(const Matrix &result, const Matrix &answer)
 {
     return (result - answer) * 2;
 }
+constexpr DataType sqr(const DataType &x)
+{
+    return x * x;
+}
+// DataType Dif01(const Matrix &result, const Matrix &answer)
+// {
+//     DataType sum = 0;
+//     if (result.height() != answer.height() || result.width() != answer.width())
+//         throw "invalid args!";
+//     for (int i = 0; i < result.height(); i++)
+//         for (int j = 0; j < result.width(); j++)
+//         {
+//             if (answer[i][j] > 0.5)
+//             {
+//                 if (result[i][j] > 1)
+//                     sum += sqr(result[i][j] - 1);
+//                 else if (result[i][j] > 0.5)
+//                     sum += 0.1 * (1 - result[i][j]);
+//                 else
+//                     sum += sqr(result[i][j] - 0.55) - sqr(0.05) + 0.05;
+//             }
+//         }
+//     return sum;
+// }
 
 Gradient::Gradient() = default;
-Gradient::Gradient(const Web &web) : doors(web.doors), edges(web.edges) {}
+Gradient::Gradient(const Web &web)
+{
+    for (int i = 0; i < web.doors.size(); i++)
+        doors.push(Matrix(web.doors[i].height(), web.doors[i].width()));
+    for (int i = 0; i < web.edges.size(); i++)
+        edges.push(Matrix(web.edges[i].height(), web.edges[i].width()));
+}
 void Gradient::calculate(Web &web, const Matrix &output, Matrix (*dLossFunc)(Matrix const &result, Matrix const &answer))
 {
     // web.input() = input;
@@ -37,5 +68,11 @@ Gradient &Gradient::operator*=(const DataType &x) &
         doors[i] *= x;
     for (int i = 0; i < edges.size(); i++)
         edges[i] *= x;
+    return *this;
+}
+Gradient &Gradient::operator+=(const Gradient &x) &
+{
+    doors += x.doors;
+    edges += x.edges;
     return *this;
 }
